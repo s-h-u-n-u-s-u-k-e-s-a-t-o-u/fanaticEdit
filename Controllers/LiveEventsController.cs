@@ -133,6 +133,10 @@ public class LiveEventsController : Controller
                 SetListNo = group.SetList.SetListNo,
                 SongId = group.SetList.SongId,
                 Title = group.SetList.Title,
+                Singing = group.SetList.Singing,
+                Medley = group.SetList.Medley,
+                Cover = group.SetList.Cover,
+                Part_Type = group.SetList.Part_Type,
                 CreatedAt = group.SetList.CreatedAt,
                 ModifiedAt = group.SetList.ModifiedAt,
                 Note = group.Note.FirstOrDefault(),
@@ -271,6 +275,10 @@ public class LiveEventsController : Controller
                     {
                         // 更新した
                         sl.ModifiedAt = timeStamp;
+                        sl.Singing = sl.Singing;
+                        sl.Medley = sl.Medley;
+                        sl.Cover = sl.Cover;
+                        sl.Part_Type = sl.Part_Type;
                         _context.SetLists.Update(sl);
 
                         if (sl.Note != null)
