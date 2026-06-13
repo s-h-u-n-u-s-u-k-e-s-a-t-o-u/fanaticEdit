@@ -1,0 +1,65 @@
+﻿@model IEnumerable<fanaticEdit.Models.Song>
+
+@{
+    ViewData["Title"] = "Song";
+}
+<h1>@ViewData["Title"]</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Title)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Kana)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CreatedAt)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ModifiedAt)
+            </th>
+
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    <div>
+                        @Html.DisplayFor(modelItem => item.Title)
+                    </div>
+                    <div>
+                        @Html.DisplayFor(modelItem => item.SongId)
+                    </div>
+                </td>
+                <td>
+                    <div>
+                        @Html.DisplayFor(modelItem => item.Title)
+                    </div>
+                    <div>
+                        @Html.DisplayFor(modelItem => item.Kana)
+                    </div>
+                </td>
+                <td>
+                    <div>
+                        @Html.DisplayFor(modelItem => item.CreatedAt)
+                    </div>
+                    <div>
+                        @Html.DisplayFor(modelItem => item.ModifiedAt)
+                    </div>
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.SongId">Edit</a> |
+                    <a asp-controller="RoleOnSong" asp-action="Edit" asp-route-id="@item.SongId">人物紐づけ</a> |
+                    <a asp-action="Delete" asp-route-id="@item.SongId">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

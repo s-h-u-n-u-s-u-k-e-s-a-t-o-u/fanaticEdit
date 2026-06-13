@@ -1,0 +1,59 @@
+﻿@model fanaticEdit.Models.AbstractEvent
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>AbstractEvent</h4>
+<hr />
+<form asp-action="Edit">
+    <div class="row">
+        <div class="col-4">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="AbstractEventId" class="control-label"></label>
+                <input asp-for="AbstractEventId" class="form-control" readonly />
+            </div>
+            <div class="form-group">
+                <label asp-for="Title" class="control-label"></label>
+                <input asp-for="Title" class="form-control" />
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CreatedAt" class="control-label"></label>
+                <input asp-for="CreatedAt" class="form-control" />
+                <span asp-validation-for="CreatedAt" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ModifiedAt" class="control-label"></label>
+                <input asp-for="ModifiedAt" class="form-control" />
+                <span asp-validation-for="ModifiedAt" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </div>
+        <div class="col-4">
+            @if (Model.LinkedEvents != null)
+            {
+                <ul class="list-group">
+                    @foreach (var le in Model.LinkedEvents)
+                    {
+                        <li class="list-group-item">@le.LiveEvent.Title</li>
+                    }
+                </ul>
+
+            }
+        </div>
+    </div>
+</form>
+<a asp-action="Index">Back to List</a>
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

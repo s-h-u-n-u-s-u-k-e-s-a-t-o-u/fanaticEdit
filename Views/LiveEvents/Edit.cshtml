@@ -1,0 +1,105 @@
+﻿@model fanaticEdit.Models.LiveEvent
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>LiveEvent</h4>
+<hr />
+<form asp-action="Edit">
+    <div class="row">
+        <div class="col-4">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="LiveEventId" class="control-label"></label>
+                <input type="text" asp-for="LiveEventId" class="form-control" readonly />
+            </div>
+            <input type="hidden" asp-for="LiveEventId" />
+            <div class="form-group">
+                <label asp-for="Title" class="control-label"></label>
+                <input asp-for="Title" class="form-control" />
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Place" class="control-label"></label>
+                <input asp-for="Place" class="form-control" />
+                <span asp-validation-for="Place" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="PerformAt" class="control-label"></label>
+                <input asp-for="PerformAt" class="form-control" />
+                <span asp-validation-for="PerformAt" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CreatedAt" class="control-label"></label>
+                <input asp-for="CreatedAt" class="form-control" readonly />
+                <span asp-validation-for="CreatedAt" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ModifiedAt" class="control-label"></label>
+                <input asp-for="ModifiedAt" class="form-control" readonly />
+                <span asp-validation-for="ModifiedAt" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="AbstractEventId" class="control-label"></label>
+                <input asp-for="AbstractEventId" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label asp-for="LiveEventNote.Note" class="control-label"></label>
+                <TextArea asp-for="LiveEventNote.Note" class="form-control"></TextArea>
+            </div>
+
+        </div>
+        <div class="col-8">
+            @if (Model.SetList != null)
+            {
+                <div class="row">
+                    <div class="col-sm-1">削除対象</div>
+                    <div class="SetListNo col-sm-2">曲順</div>
+                    <div class="col-sm-3">SONG ID</div>
+                    <div class="col-sm-6"><label asp-for="SetList[0].Title" class="control-label"></label></div>
+                </div>
+                @for (var i = 0; i < Model.SetList.Count; i++)
+                {
+                    <div class="row">
+                        <div class="col-sm-1">
+                            <input asp-for="SetList[i].SetListId" class="form-control" hidden />
+                            <input asp-for="SetList[i].LiveEventId" class="form-control" hidden />
+                            <input asp-for="SetList[i].CreatedAt" class="form-control" hidden />
+                            <input asp-for="SetList[i].ModifiedAt" class="form-control" hidden />
+                            <input asp-for="SetList[i].WillBeRemove" class="form-control form-check-input" />
+                        </div>
+                        <div class="col-sm-2"><input asp-for="SetList[i].SetListNo" class="form-control" /></div>
+                        <div class="col-sm-3"><input asp-for="SetList[i].SongId" class="form-control" /></div>
+                        <div class="col-sm-6"><input asp-for="SetList[i].Title" class="form-control" /></div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12"><input asp-for="SetList[i].Note.Note" class="form-control" /></div>
+                    </div>
+                }
+                <div>
+                    <span>
+                        <button asp-controller="LiveEvents" asp-action="AddNewSetList" asp-route-id="@Model.LiveEventId" type="submit">
+                            [+]
+                        </button>
+                    </span>
+                </div>
+            }
+        </div>
+    </div>
+    <div class="form-group">
+        <input type="submit" value="Save" class="btn btn-primary" method="post" asp-controller="LiveEvents" asp-action="Edit" asp-route-id="@Model.LiveEventId" />
+    </div>
+</form>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

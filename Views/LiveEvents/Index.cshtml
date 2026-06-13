@@ -1,0 +1,58 @@
+﻿@model IEnumerable<fanaticEdit.Models.LiveEvent>
+
+@{
+    ViewData["Title"] = "LiveEvent";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Title)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Place)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PerformAt)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CreatedAt)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ModifiedAt)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                    <div>@Html.DisplayFor(modelItem => item.Title)</div><div>@Html.DisplayFor(modelItem => item.LiveEventNote.Note)</div>
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Place)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PerformAt)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CreatedAt)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ModifiedAt)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.LiveEventId">Edit</a> |
+                <a asp-action="Delete" asp-route-id="@item.LiveEventId">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

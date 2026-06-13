@@ -1,0 +1,93 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="row">
+    <div class="col-sm-4  ">
+        <h2>アルバム</h2>
+        <ol>
+            <li>
+                <span><i class="bi bi-database-fill"></i></span>
+                <a asp-controller="AbstractAlbums" asp-action="Index">Abstract Albums</a>
+            </li>
+            <li>
+                <span><i class="bi bi-database-fill"></i></span>
+                <a asp-controller="Albums" asp-action="Index">Albums / tracks</a>
+            </li>
+            <li>
+                <span>
+                    <i class="bi bi-chat-right-heart"></i>
+                </span>
+                <a asp-controller="Songs" asp-action="Index">Songs</a>
+                <ul>
+
+                </ul>
+            </li>
+        </ol>
+
+    </div>
+    <div class="col-sm-4">
+        <h2>イベント</h2>
+        <ol>
+            <li>
+                <span>
+                    <i class="bi bi-chat-right-heart"></i>
+                </span>
+                <a asp-controller="AbstractEvents" asp-action="Index">Abstract Events</a>
+            </li>
+            <li>
+                <span>
+                    <i class="bi bi-chat-right-heart"></i>
+                </span>
+                <a asp-controller="LiveEvents" asp-action="Index">Live Events</a>
+            </li>
+        </ol>
+    </div>
+    <div class="col-sm-4">
+        <h2>マスタ</h2>
+        <ol>
+            <li>
+                <span>
+                    <i class="bi bi-chat-right-heart"></i>
+                </span>
+                <a asp-controller="Labels" asp-action="Index">レーベル</a>
+            </li>
+            <li>
+                <span>
+                    <i class="bi bi-chat-right-heart"></i>
+                </span>
+                <a asp-controller="Organizations" asp-action="Index">会社/組織</a>
+            </li>
+            <li>
+                <span>
+                    <i class="bi bi-chat-right-heart"></i>
+                </span>
+                <a asp-controller="Media" asp-action="Index">媒体</a>
+            </li>
+            <li>
+                <span><i class="bi bi-database-fill"></i></span>
+                <a asp-controller="Roles" asp-action="Index">役割</a>
+            </li>
+        </ol>
+    </div>
+</div>
+
+
+<div class="row">
+    <div class="col-sm-4  ">
+        <h2>人物</h2>
+        <ol>
+            <li>
+                <span><i class="bi bi-database-fill"></i></span>
+                <a asp-controller="People" asp-action="Index">People</a>
+            </li>
+        </ol>
+
+    </div>
+    <div class="col-sm-4  ">
+    </div>
+
+    <div class="col-sm-4  ">
+    </div>
+</div>
+

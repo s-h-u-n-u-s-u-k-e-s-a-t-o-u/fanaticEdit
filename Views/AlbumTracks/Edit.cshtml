@@ -1,0 +1,56 @@
+﻿@model fanaticEdit.DTO.AlbumTracks
+
+<h1>@Model.Album.Title</h1>
+@Model.Album.AlbumId
+<form asp-action="Edit">
+
+    <input asp-for="@Model.Album.AlbumId" hidden />
+    <input asp-for="@Model.Album.Code" hidden />
+    <input asp-for="@Model.Album.Title" hidden />
+    <input asp-for="@Model.Album.MediaType" hidden />
+    <input asp-for="@Model.Album.ReleaseOn" hidden />
+    <input asp-for="@Model.Album.LabelId" hidden />
+    <input asp-for="@Model.Album.CreatedAt" hidden />
+    <input asp-for="@Model.Album.ModifiedAt" hidden />
+    <input asp-for="@Model.Album.AbstractAlbumID" hidden />
+
+    <button asp-controller="AlbumTracks" asp-action="AddLine" asp-route-id="@Model.Album.AlbumId" type="submit">[+]</button>
+
+    @if (Model.Tracks != null)
+    {
+        <table>
+            <tr>
+                <th>Track Id</th>
+                <th>No</th>
+                <th>タイトル</th>
+                <th>Song ID</th>
+                <th>note</th>
+            </tr>
+            @for (var i = 0; i < Model.Tracks.Count; i++)
+            {
+                <tr>
+                    <td>
+                        <div>@Model.Tracks[i].TrackId</div>
+                        <div>@Model.Tracks[i].AlbumId</div>
+                        <input asp-for="@Model.Tracks[i].TrackId" hidden />
+                        <input asp-for="@Model.Tracks[i].AlbumId" hidden />
+                        <input asp-for="@Model.Tracks[i].CreatedAt" hidden />
+                        <input asp-for="@Model.Tracks[i].ModifiedAt" hidden />
+                    </td>
+                    <td>
+                        <input asp-for="@Model.Tracks[i].TrackNo" />
+                    </td>
+                    <td>
+                        <input asp-for="@Model.Tracks[i].Title" />
+                    </td>
+                    <td>
+                        <input asp-for="@Model.Tracks[i].SongId" />
+                    </td>
+                    <td>
+                    </td>
+                </tr>
+            }
+        </table>
+    }
+    <input type="submit" asp-controller="AlbumTracks" asp-action="Save" value="Save" class="btn btn-primary" />
+</form>

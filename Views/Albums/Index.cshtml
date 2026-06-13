@@ -1,0 +1,77 @@
+﻿@model IEnumerable<fanaticEdit.Models.Album>
+
+@{
+    ViewData["Title"] = "Album";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Code)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Title)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.MediaType)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ReleaseOn)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LabelId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CreatedAt)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ModifiedAt)
+            </th>
+            <th></th>
+            <th>
+                Tracks
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Code)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Title)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.MediaType)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ReleaseOn)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LabelId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CreatedAt)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ModifiedAt)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.AlbumId">Edit album</a> |
+                <a asp-action="Delete" asp-route-id="@item.AlbumId">Delete</a>
+                </td>
+                <td>
+                    <a asp-controller="AlbumTracks" asp-action="Edit" asp-route-id="@item.AlbumId">Edit Track</a> |
+                    Edit Role
+                    </td>
+        </tr>
+}
+    </tbody>
+</table>
