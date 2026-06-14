@@ -57,15 +57,19 @@
             @if (Model.SetList != null)
             {
                 <div class="row">
-                    <div class="col-sm-1">削除対象</div>
-                    <div class="col-sm-1">曲順</div>
+                    <div class="col-sm-1">削除</div>
+                    <div class="col-sm-2">曲順</div>
                     <div class="col-sm-2">SONG ID</div>
-                    <div class="col-sm-2">タイトル</div>
-                    <div class="col-sm-1">歌唱</div>
-                    <div class="col-sm-1">メドレー</div>
-                    <div class="col-sm-1">カバー</div>
-                    <div class="col-sm-1">パート区分</div>
+                    <div class="col-sm-7">タイトル</div>
                 </div>
+                <div class="row">
+                    <div class="col-sm-1"></div>
+                    <div class="col-sm-2">歌唱</div>
+                    <div class="col-sm-2">メドレー</div>
+                    <div class="col-sm-2">カバー</div>
+                    <div class="col-sm-5">パート</div>
+                </div>
+                <hr />
                 @for (var i = 0; i < Model.SetList.Count; i++)
                 {
                     <div class="row">
@@ -76,29 +80,39 @@
                             <input asp-for="SetList[i].ModifiedAt" class="form-control" hidden />
                             <input asp-for="SetList[i].WillBeRemove" class="form-control form-check-input" />
                         </div>
-                        <div class="col-sm-1"><input asp-for="SetList[i].SetListNo" class="form-control" type="number" /></div>
-                        <div class="col-sm-2"><input asp-for="SetList[i].SongId" class="form-control" /></div>
-                        <div class="col-sm-2"><input asp-for="SetList[i].Title" class="form-control" /></div>
-                        <div class="col-sm-1">
-                            <input asp-for="SetList[i].Singing" class="form-control form-check-input" type="checkbox" />
-                        </div>
-                        <div class="col-sm-1">
-                            <input asp-for="SetList[i].Medley" class="form-control form-check-input" type="checkbox" />
-                        </div>
-                        <div class="col-sm-1">
-                            <input asp-for="SetList[i].Cover" class="form-control form-check-input" type="checkbox" />
-                        </div>
+                        <div class="col-sm-2"><input asp-for="SetList[i].SetListNo" class="form-control" type="number" /></div>
                         <div class="col-sm-2">
-                        <select asp-for="SetList[i].Part_Type" class="form-control">
-                            <option value="">-- 選択 --</option>
-                            <option value="@((int)Part.Main)" selected="@(Model.SetList[i].Part_Type == (int)Part.Main)">@Part.Main</option>
-                            <option value="@((int)Part.Encore)" selected="@(Model.SetList[i].Part_Type == (int)Part.Encore)">@Part.Encore</option>
-                        </select>
+                            <div class="input-group">
+                                <input asp-for="SetList[i].SongId" class="form-control songId-input"  />
+                                <button type="button" class="btn btn-outline-secondary" onclick="openSongSelector(@i)">...</button>
+                            </div>
                         </div>
-
+                        <div class="col-sm-7">
+                            <input asp-for="SetList[i].Title" class="form-control song-title-input"  />
+                        </div>
                     </div>
                     <div class="row">
-                        <div class="col-sm-12"><input asp-for="SetList[i].Note.Note" class="form-control" placeholder="メモ" /></div>
+                        <div class="col-sm-1"></div>
+                        <div class="col-sm-2">
+                            <input asp-for="SetList[i].Singing" class="form-control form-check-input" type="checkbox" />
+                        </div>
+                        <div class="col-sm-2">
+                            <input asp-for="SetList[i].Medley" class="form-control form-check-input" type="checkbox" />
+                        </div>
+                        <div class="col-sm-2">
+                            <input asp-for="SetList[i].Cover" class="form-control form-check-input" type="checkbox" />
+                        </div>
+                        <div class="col-sm-5">
+                            <select asp-for="SetList[i].Part_Type" class="form-control">
+                                <option value="">-- 選択 --</option>
+                                <option value="@((int)Part.Main)" selected="@(Model.SetList[i].Part_Type == (int)Part.Main)">@Part.Main</option>
+                                <option value="@((int)Part.Encore)" selected="@(Model.SetList[i].Part_Type == (int)Part.Encore)">@Part.Encore</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-1"></div>
+                        <div class="col-sm-11"><input asp-for="SetList[i].Note.Note" class="form-control" placeholder="メモ" /></div>
                     </div>
                     <hr />
                 }
@@ -120,6 +134,24 @@
 <div>
     <a asp-action="Index">Back to List</a>
 </div>
+
+<script>
+    let currentSongIndex = -1;
+
+    function openSongSelector(index) {
+        currentSongIndex = index;
+        window.open('@Url.Action("SongSelector", "LiveEvents")', 'songSelector', 'width=600,height=400');
+    }
+
+    function setSongData(songId, title) {
+        if (currentSongIndex >= 0) {
+            const songIdInput = document.querySelectorAll('.songId-input')[currentSongIndex];
+            const titleInput = document.querySelectorAll('.song-title-input')[currentSongIndex];
+            songIdInput.value = songId;
+            titleInput.value = title;
+        }
+    }
+</script>
 
 @section Scripts {
     @{

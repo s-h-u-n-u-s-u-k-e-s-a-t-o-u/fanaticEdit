@@ -380,4 +380,14 @@ public class LiveEventsController : Controller
     {
         return _context.LiveEvents.Any(e => e.LiveEventId == id);
     }
+
+    // GET: LiveEvents/SongSelector
+    public async Task<IActionResult> SongSelector()
+    {
+        var songs = await _context.Songs
+            .OrderBy(s => s.Title)
+            .ToListAsync();
+        
+        return View(songs);
+    }
 }

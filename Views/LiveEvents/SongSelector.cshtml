@@ -1,0 +1,49 @@
+@model List<fanaticEdit.Models.Song>
+
+@{
+    ViewData["Title"] = "曲を選択";
+}
+
+<div class="modal-content">
+    <div class="modal-header">
+        <h5 class="modal-title">曲を選択</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    </div>
+    <div class="modal-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th>タイトル</th>
+                        <th>カナ</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var song in Model)
+                    {
+                        <tr>
+                            <td>@song.Title</td>
+                            <td>@song.Kana</td>
+                            <td>
+                                <button type="button" class="btn btn-sm btn-primary" 
+                                    onclick="selectSong('@song.SongId', '@song.Title')">
+                                    選択
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    function selectSong(songId, title) {
+        // 親ウィンドウの要素に値をセット
+        window.opener.setSongData(songId, title);
+        // ポップアップを閉じる
+        window.close();
+    }
+</script>
