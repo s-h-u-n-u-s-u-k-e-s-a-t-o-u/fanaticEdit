@@ -1,4 +1,5 @@
 ﻿@model fanaticEdit.Models.LiveEvent
+@using fanaticEdit.Enum
 
 @{
     ViewData["Title"] = "Edit";
@@ -87,11 +88,19 @@
                         <div class="col-sm-1">
                             <input asp-for="SetList[i].Cover" class="form-control form-check-input" type="checkbox" />
                         </div>
-                        <div class="col-sm-1"><input asp-for="SetList[i].Part_Type" class="form-control" type="number" /></div>
+                        <div class="col-sm-2">
+                        <select asp-for="SetList[i].Part_Type" class="form-control">
+                            <option value="">-- 選択 --</option>
+                            <option value="@((int)Part.Main)" selected="@(Model.SetList[i].Part_Type == (int)Part.Main)">@Part.Main</option>
+                            <option value="@((int)Part.Encore)" selected="@(Model.SetList[i].Part_Type == (int)Part.Encore)">@Part.Encore</option>
+                        </select>
+                        </div>
+
                     </div>
                     <div class="row">
                         <div class="col-sm-12"><input asp-for="SetList[i].Note.Note" class="form-control" placeholder="メモ" /></div>
                     </div>
+                    <hr />
                 }
                 <div>
                     <span>
