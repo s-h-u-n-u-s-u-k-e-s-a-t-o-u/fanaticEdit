@@ -9,6 +9,15 @@ public enum Part
     Encore = 2
 }
 
+
+public static class PartExtensions
+{
+    public static int ToInt(this Part part)
+    {      
+        return (int)part;
+    }
+}
+
 public static class PartParser { 
     public static Part Parse(int value) {
         return value switch

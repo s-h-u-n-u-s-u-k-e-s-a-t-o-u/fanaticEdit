@@ -51,9 +51,20 @@
                 <label asp-for="LiveEventNote.Note" class="control-label"></label>
                 <TextArea asp-for="LiveEventNote.Note" class="form-control"></TextArea>
             </div>
-
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" method="post" asp-controller="LiveEvents" asp-action="Edit" asp-route-id="@Model.LiveEventId" />
+            </div>
         </div>
         <div class="col-8">
+
+            <div>
+                <span>
+                    <button asp-controller="LiveEvents" asp-action="AddNewSetList" asp-route-id="@Model.LiveEventId" type="submit">
+                        [+]
+                    </button>
+                </span>
+            </div>
+
             @if (Model.SetList != null)
             {
                 <div class="row">

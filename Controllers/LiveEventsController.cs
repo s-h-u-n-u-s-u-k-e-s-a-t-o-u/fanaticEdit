@@ -1,4 +1,5 @@
 ﻿using fanaticEdit.Data;
+using fanaticEdit.Enum;
 using fanaticEdit.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -152,8 +153,16 @@ public class LiveEventsController : Controller
     public IActionResult AddNewSetList(Guid id, [Bind("LiveEventId,Title,Place,PerformAt,CreatedAt,ModifiedAt,LiveEventNote,SetList,AbstractEventId")] LiveEvent liveEvent)
     {
         liveEvent.SetList ??= new List<SetList>();
+        liveEvent.SetList = liveEvent.SetList.OrderBy(sl => sl.SetListNo).ToList();
 
-        liveEvent.SetList.Add(new SetList() { LiveEventId = id, SetListId = Guid.NewGuid() });
+        int lastNo = (liveEvent.SetList.Any() ? liveEvent.SetList.Max(m => m.SetListNo) : 0) + 1;
+
+        // 先頭に追加
+        liveEvent.SetList.Insert(0, new SetList() { LiveEventId = id, SetListId = Guid.NewGuid(), SetListNo = lastNo, Part_Type = Part.Main.ToInt() });
+        
+        // インデックスをリセット：ModelState を消去してバインディングを再構築
+        ModelState.Clear();
+
         return View("Edit", liveEvent);
     }
 
@@ -199,10 +208,11 @@ public class LiveEventsController : Controller
                 else
                 {
                     // DBにレコードが無ければ追加
-                    _context.AbstractEventLinks.Add(new AbstractEventLink() {
+                    _context.AbstractEventLinks.Add(new AbstractEventLink()
+                    {
                         EventId = liveEvent.LiveEventId,
-                        AbstractEventId=liveEvent.AbstractEventId.Value ,
-                        CreatedAt = DateTime .Now,
+                        AbstractEventId = liveEvent.AbstractEventId.Value,
+                        CreatedAt = DateTime.Now,
                         ModifiedAt = DateTime.Now,
                     });
                 }
@@ -339,8 +349,8 @@ public class LiveEventsController : Controller
                 throw;
             }
         }
-        
-        return RedirectToAction("Edit",id);
+
+        return RedirectToAction("Edit", id);
     }
 
     // GET: LiveEvents/Delete/5
@@ -387,7 +397,7 @@ public class LiveEventsController : Controller
         var songs = await _context.Songs
             .OrderBy(s => s.Title)
             .ToListAsync();
-        
+
         return View(songs);
     }
 }
