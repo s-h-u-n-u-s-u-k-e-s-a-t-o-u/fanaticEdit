@@ -10,7 +10,7 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Create">
+        <form asp-action="Create" id="createForm">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <input asp-for="LiveEventId" class="form-control" readonly />
@@ -44,8 +44,29 @@
             <div class="form-group">
                 <label asp-for="AbstractEventId" class="control-label"></label>
                 <input asp-for="AbstractEventId" class="form-control" />
-                <span asp-validation-for="ModifiedAt" class="text-danger"></span>
+                <span asp-validation-for="AbstractEventId" class="text-danger"></span>
             </div>
+
+            <h5>URL & Description</h5>
+            <div id="urlContainer">
+                <div class="url-item mb-3 p-2 border rounded">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label class="form-label">URL</label>
+                            <input type="text" class="form-control url-input" placeholder="https://..." />
+                        </div>
+                        <div class="col-md-5">
+                            <label class="form-label">説明</label>
+                            <input type="text" class="form-control description-input" placeholder="説明を入力" />
+                        </div>
+                        <div class="col-md-1 d-flex align-items-end">
+                            <button type="button" class="btn btn-sm btn-danger" onclick="removeUrlItem(this)">削除</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button type="button" class="btn btn-sm btn-success mb-3" onclick="addUrlItem()">+ URL を追加</button>
 
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
@@ -58,6 +79,61 @@
     <a asp-action="Index">Back to List</a>
 </div>
 
+<script>
+    function addUrlItem() {
+        const container = document.getElementById('urlContainer');
+        const newItem = document.createElement('div');
+        newItem.className = 'url-item mb-3 p-2 border rounded';
+        newItem.innerHTML = `
+            <div class="row">
+                <div class="col-md-6">
+                    <label class="form-label">URL</label>
+                    <input type="text" class="form-control url-input" placeholder="https://..." />
+                </div>
+                <div class="col-md-5">
+                    <label class="form-label">説明</label>
+                    <input type="text" class="form-control description-input" placeholder="説明を入力" />
+                </div>
+                <div class="col-md-1 d-flex align-items-end">
+                    <button type="button" class="btn btn-sm btn-danger" onclick="removeUrlItem(this)">削除</button>
+                </div>
+            </div>
+        `;
+        container.appendChild(newItem);
+    }
+
+    function removeUrlItem(button) {
+        button.closest('.url-item').remove();
+    }
+
+    // DOMContentLoaded で確実にフォームを取得
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('createForm');
+
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                const urlItems = document.querySelectorAll('.url-item');
+                const urlsJson = Array.from(urlItems).map(item => ({
+                    url: item.querySelector('.url-input').value,
+                    description: item.querySelector('.description-input').value
+                }));
+
+                // 隠しフィールドに JSON を格納
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'urlsData';
+                input.value = JSON.stringify(urlsJson);
+                form.appendChild(input);
+
+                console.log('送信データ:', urlsJson); // デバッグ用
+            });
+        } else {
+            console.error('フォームが見つかりません');
+        }
+    });
+</script>
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

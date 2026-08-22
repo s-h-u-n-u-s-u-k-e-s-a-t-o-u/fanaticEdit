@@ -3,6 +3,7 @@ using fanaticEdit.Enum;
 using fanaticEdit.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json;
 
 namespace fanaticEdit.Controllers;
 
@@ -56,7 +57,7 @@ public class LiveEventsController : Controller
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create([Bind("LiveEventId,Title,Place,PerformAt,CreatedAt,ModifiedAt,AbstractEventId")] LiveEvent liveEvent)
+    public async Task<IActionResult> Create([Bind("LiveEventId,Title,Place,PerformAt,CreatedAt,ModifiedAt,AbstractEventId")] LiveEvent liveEvent, string? urlsData)
     {
         if (ModelState.IsValid)
         {
@@ -74,12 +75,40 @@ public class LiveEventsController : Controller
                     ModifiedAt = DateTime.Now
                 };
                 _context.AbstractEventLinks.Add(abstractEventLink);
+                await _context.SaveChangesAsync();
             }
 
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            if (!string.IsNullOrEmpty(urlsData))
+            {
+                try
+                {
+                    var urlsList = JsonSerializer.Deserialize<List<dynamic>>(urlsData);
+                    if (urlsList != null)
+                    {
+                        var timeStamp = DateTime.Now;
+                        foreach (var urlItem in urlsList)
+                        {
+                            if (!string.IsNullOrEmpty(urlItem.GetProperty("url").GetString()))
+                            {
+                                Live_Event_Url leu = new Live_Event_Url()
+                                {
+                                    Live_Event_Id = liveEvent.LiveEventId,  // ✅ 追加
+                                    Url = urlItem.GetProperty("url").GetString(),
+                                    Description = urlItem.GetProperty("description").GetString(),
+                                    Created_At = timeStamp,
+                                    Modified_At = timeStamp
+                                };
+                                _context.LiveEventUrls.Add(leu);
+                            }
+                        }
+                        await _context.SaveChangesAsync();
+                    }
+                }
+                catch { }
+            }
         }
-        return View(liveEvent);
+
+        return RedirectToAction(nameof(Index));
     }
 
     // GET: LiveEvents/Edit/5
@@ -145,7 +174,20 @@ public class LiveEventsController : Controller
             )
             .OrderBy(r => r.SetListNo).ToListAsync();
 
+        // Event_list_urlを取得する
+        var liveEventUrls =await _context.LiveEventUrls
+            .Where(leu => leu.Live_Event_Id == id)
+            .OrderBy(leu=>leu.Live_Event_Url_Id)
+            .ToListAsync();
+
+        // JSON 化して ViewBag に格納
+        ViewBag.UrlsData = JsonSerializer.Serialize(liveEventUrls.Select(u => new
+        {
+            url = u.Url,
+            description = u.Description
+        }));
         return View(le);
+
     }
 
     [HttpPost]
@@ -159,7 +201,7 @@ public class LiveEventsController : Controller
 
         // 先頭に追加
         liveEvent.SetList.Insert(0, new SetList() { LiveEventId = id, SetListId = Guid.NewGuid(), SetListNo = lastNo, Part_Type = Part.Main.ToInt() });
-        
+
         // インデックスをリセット：ModelState を消去してバインディングを再構築
         ModelState.Clear();
 
@@ -171,7 +213,7 @@ public class LiveEventsController : Controller
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(Guid id, [Bind("LiveEventId,Title,Place,PerformAt,CreatedAt,ModifiedAt,AbstractEventId,LiveEventNote,SetList")] LiveEvent liveEvent)
+    public async Task<IActionResult> Edit(Guid id, [Bind("LiveEventId,Title,Place,PerformAt,CreatedAt,ModifiedAt,AbstractEventId,LiveEventNote,SetList")] LiveEvent liveEvent, string? urlsData)
     {
         // ライブイベントのレコードが存在するか
         if (id != liveEvent.LiveEventId)
@@ -337,6 +379,41 @@ public class LiveEventsController : Controller
             }
             // EFを通して変更をDBに反映する
             await _context.SaveChangesAsync();
+
+            // Live_Event_Url の処理 - 既存URLをすべて削除して新しいものを追加
+            await _context.LiveEventUrls.Where(m => m.Live_Event_Id == id).ExecuteDeleteAsync();
+
+            if (!string.IsNullOrEmpty(urlsData))
+            {
+                try
+                {
+                    var urlsList = JsonSerializer.Deserialize<List<dynamic>>(urlsData);
+                    if (urlsList != null)
+                    {
+                        foreach (var urlItem in urlsList)
+                        {
+                            if (!string.IsNullOrEmpty(urlItem.GetProperty("url").GetString()))
+                            {
+                                Live_Event_Url leu = new Live_Event_Url()
+                                {
+                                    Live_Event_Id = id,  // ✅ 外部キーを正しく設定
+                                    Url = urlItem.GetProperty("url").GetString(),
+                                    Description = urlItem.GetProperty("description").GetString(),
+                                    Created_At = timeStamp,
+                                    Modified_At = timeStamp
+                                };
+                                _context.LiveEventUrls.Add(leu);
+                            }
+                        }
+                        await _context.SaveChangesAsync();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    // ログに記録またはユーザーに通知
+                    Console.WriteLine($"URL処理エラー: {ex.Message}");
+                }
+            }
         }
         catch (DbUpdateConcurrencyException)
         {

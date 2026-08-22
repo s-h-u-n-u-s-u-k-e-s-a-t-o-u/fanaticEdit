@@ -67,4 +67,12 @@ public partial class LiveEvent
     [NotMapped]
     [ValidateNever]
     public List<SetList> SetList { get; set; } = null!;
+
+    /// <summary>
+    /// URL一覧
+    /// </summary>
+    [NotMapped]
+    [ValidateNever]
+    public List<Live_Event_Url> Live_Event_Urls { get; set; } = null!;
+
 }

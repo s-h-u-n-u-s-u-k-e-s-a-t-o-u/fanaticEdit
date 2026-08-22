@@ -9,7 +9,7 @@
 
 <h4>LiveEvent</h4>
 <hr />
-<form asp-action="Edit">
+<form asp-action="Edit" id="editForm">
     <div class="row">
         <div class="col-4">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
@@ -51,6 +51,16 @@
                 <label asp-for="LiveEventNote.Note" class="control-label"></label>
                 <TextArea asp-for="LiveEventNote.Note" class="form-control"></TextArea>
             </div>
+            <div class="">
+                <!-- ここからURL & Description セクション -->
+                <h5 class="mt-4">URL & Description</h5>
+                <div id="urlContainer">
+                    <!-- URLアイテムがここに動的に挿入されます -->
+                </div>
+                <button type="button" class="btn btn-sm btn-success mb-3" onclick="addUrlItem()">+ URL を追加</button>
+                <!-- ここまでURL & Description セクション -->
+            </div>
+
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" method="post" asp-controller="LiveEvents" asp-action="Edit" asp-route-id="@Model.LiveEventId" />
             </div>
@@ -162,6 +172,89 @@
             titleInput.value = title;
         }
     }
+
+    // URL関連の関数
+    function addUrlItem() {
+        const container = document.getElementById('urlContainer');
+        const newItem = document.createElement('div');
+        newItem.className = 'url-item mb-3 p-2 border rounded';
+        newItem.innerHTML = `
+            <div class="row">
+                <div class="col-md-12">
+                    <label class="form-label">URL</label>
+                    <input type="text" class="form-control url-input" placeholder="https://..." />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <label class="form-label">説明</label>
+                    <input type="text" class="form-control description-input" placeholder="説明を入力" />
+                </div>
+                <div class="col-md-1 d-flex align-items-end">
+                    <button type="button" class="btn btn-sm btn-danger" onclick="removeUrlItem(this)">削除</button>
+                </div>
+            </div>
+        `;
+        container.appendChild(newItem);
+    }
+
+    function removeUrlItem(button) {
+        button.closest('.url-item').remove();
+    }
+
+    // DOMContentLoaded で既存データを初期化
+    document.addEventListener('DOMContentLoaded', function() {
+        const container = document.getElementById('urlContainer');
+        const urlsDataJson = '@Html.Raw(ViewBag.UrlsData ?? "[]")';
+
+        try {
+            const urlsData = JSON.parse(urlsDataJson);
+            urlsData.forEach(item => {
+                const newItem = document.createElement('div');
+                newItem.className = 'url-item mb-3 p-2 border rounded';
+                newItem.innerHTML = `
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label class="form-label">URL</label>
+                            <input type="text" class="form-control url-input" placeholder="https://..." value="${item.url || ''}" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label class="form-label">説明</label>
+                            <input type="text" class="form-control description-input" placeholder="説明を入力" value="${item.description || ''}" />
+                        </div>
+                        <div class="col-md-1 d-flex align-items-end">
+                            <button type="button" class="btn btn-sm btn-danger" onclick="removeUrlItem(this)">削除</button>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(newItem);
+            });
+        } catch (e) {
+            console.error('URLデータのパース エラー:', e);
+        }
+
+        // フォーム送信時
+        const form = document.getElementById('editForm');
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                const urlItems = document.querySelectorAll('.url-item');
+                const urlsJson = Array.from(urlItems).map(item => ({
+                    url: item.querySelector('.url-input').value,
+                    description: item.querySelector('.description-input').value
+                }));
+
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'urlsData';
+                input.value = JSON.stringify(urlsJson);
+                form.appendChild(input);
+
+                console.log('送信データ:', urlsJson);
+            });
+        }
+    });
 </script>
 
 @section Scripts {

@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using fanaticEdit.Models;
 using Microsoft.EntityFrameworkCore;
-using fanaticEdit.Models;
 
 namespace fanaticEdit.Data;
 
@@ -57,6 +55,9 @@ public partial class FanaticServeContext : DbContext
     public virtual DbSet<SongNote> SongNotes { get; set; }
 
     public virtual DbSet<Track> Tracks { get; set; }
+
+    public virtual DbSet<Live_Event_Url> LiveEventUrls { get; set; }
+
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
