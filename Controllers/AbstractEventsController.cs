@@ -9,10 +9,12 @@ namespace fanaticEdit.Controllers;
 public class AbstractEventsController : Controller
 {
     private readonly FanaticServeContext _context;
+    private readonly ILogger<AbstractEventsController> _logger;
 
-    public AbstractEventsController(FanaticServeContext context)
+    public AbstractEventsController(FanaticServeContext context, ILogger<AbstractEventsController> logger)
     {
         _context = context;
+        _logger = logger;
     }
 
     // GET: AbstractEvents
@@ -126,6 +128,13 @@ public class AbstractEventsController : Controller
                 {
                     throw;
                 }
+            }
+            catch (Exception ex)
+            {
+                // ロギング
+                _logger.LogError(ex, "AbstractEvent 処理エラー");
+                // または
+                ModelState.AddModelError("", "AbstractEvent の処理に失敗しました");
             }
             return RedirectToAction(nameof(Index));
         }

@@ -8,10 +8,12 @@ namespace fanaticEdit.Controllers;
 public class AbstractAlbumsController : Controller
 {
     private readonly FanaticServeContext _context;
+    private readonly ILogger<AbstractAlbumsController> _logger; 
 
-    public AbstractAlbumsController(FanaticServeContext context)
+    public AbstractAlbumsController(FanaticServeContext context, ILogger<AbstractAlbumsController> logger)
     {
         _context = context;
+        _logger = logger;
     }
 
     // GET: AbstractAlbums
@@ -136,6 +138,13 @@ public class AbstractAlbumsController : Controller
                 {
                     throw;
                 }
+            }
+            catch (Exception ex)
+            {
+                // ロギング
+                _logger.LogError(ex, "AbstractAlbum 処理エラー");
+                // または
+                ModelState.AddModelError("", "AbstractAlbum の処理に失敗しました");
             }
             return RedirectToAction(nameof(Index));
         }

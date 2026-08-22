@@ -1,9 +1,8 @@
 ﻿using fanaticEdit.Data;
 using fanaticEdit.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.EntityFrameworkCore;
-
+using Microsoft.Extensions.Logging;
 namespace fanaticEdit.Controllers;
 
 public class MediaController : Controller

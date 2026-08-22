@@ -9,10 +9,12 @@ namespace fanaticEdit.Controllers;
 public class AlbumsController : Controller
 {
     private readonly FanaticServeContext _context;
+    private readonly ILogger<AlbumsController> _logger; // ILoggerを追加
 
-    public AlbumsController(FanaticServeContext context)
+    public AlbumsController(FanaticServeContext context, ILogger<AlbumsController> logger)
     {
         _context = context;
+        _logger = logger; // ILoggerのインスタンスを取得
     }
 
     // GET: Albums
@@ -182,6 +184,13 @@ public class AlbumsController : Controller
                 {
                     throw;
                 }
+            }
+            catch (Exception ex)
+            {
+                // ロギング
+                _logger.LogError(ex, "Album処理エラー");
+                // または
+                ModelState.AddModelError("", "Albumの処理に失敗しました");
             }
             return RedirectToAction(nameof(Index));
         }

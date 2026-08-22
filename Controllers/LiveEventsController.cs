@@ -10,10 +10,12 @@ namespace fanaticEdit.Controllers;
 public class LiveEventsController : Controller
 {
     private readonly FanaticServeContext _context;
+    private readonly ILogger<LiveEventsController> _logger;
 
-    public LiveEventsController(FanaticServeContext context)
+    public LiveEventsController(FanaticServeContext context, ILogger<LiveEventsController> logger)
     {
         _context = context;
+        _logger = logger;
     }
 
     // GET: LiveEvents
@@ -104,7 +106,13 @@ public class LiveEventsController : Controller
                         await _context.SaveChangesAsync();
                     }
                 }
-                catch { }
+                catch (Exception ex)
+                {
+                    // ロギング
+                    _logger.LogError(ex, "LiveEvent処理エラー");
+                    // または
+                    ModelState.AddModelError("", "LiveEventの処理に失敗しました");
+                }
             }
         }
 
@@ -270,7 +278,7 @@ public class LiveEventsController : Controller
                     _context.AbstractEventLinks.RemoveRange(records);
                 }
             }
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();  // ✅ 非同期呼び出し
 
             // LiveEvent noteの処理
             if (String.IsNullOrEmpty(liveEvent.LiveEventNote.Note))
@@ -410,8 +418,10 @@ public class LiveEventsController : Controller
                 }
                 catch (Exception ex)
                 {
-                    // ログに記録またはユーザーに通知
-                    Console.WriteLine($"URL処理エラー: {ex.Message}");
+                    // ロギング
+                    _logger.LogError(ex, "LiveEvent処理エラー");
+                    // または
+                    ModelState.AddModelError("", "LiveEventの処理に失敗しました");
                 }
             }
         }

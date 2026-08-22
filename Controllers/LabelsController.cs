@@ -9,10 +9,12 @@ namespace fanaticEdit.Controllers;
 public class LabelsController : Controller
 {
     private readonly FanaticServeContext _context;
+    private readonly ILogger<LabelsController> _logger; // ILoggerを追加
 
-    public LabelsController(FanaticServeContext context)
+    public LabelsController(FanaticServeContext context, ILogger<LabelsController> logger)
     {
         _context = context;
+        _logger = logger; // ILoggerのインスタンスを取得
     }
 
     // GET: Labels
@@ -117,6 +119,13 @@ public class LabelsController : Controller
                 {
                     throw;
                 }
+            }
+            catch (Exception ex)
+            {
+                // ロギング
+                _logger.LogError(ex, "Label処理エラー");
+                
+                ModelState.AddModelError("", "Labelの処理に失敗しました");
             }
             return RedirectToAction(nameof(Index));
         }

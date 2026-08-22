@@ -8,10 +8,12 @@ namespace fanaticEdit.Controllers;
 public class SongsController : Controller
 {
     private readonly FanaticServeContext _context;
+    private readonly ILogger<SongsController> _logger;
 
-    public SongsController(FanaticServeContext context)
+    public SongsController(FanaticServeContext context, ILogger<SongsController> logger)
     {
         _context = context;
+        _logger = logger;
     }
 
     // GET: Songs
@@ -92,6 +94,13 @@ public class SongsController : Controller
                 {
                     throw;
                 }
+            }
+            catch (Exception ex)
+            {
+                // ロギング
+                _logger.LogError(ex, "Song処理エラー");
+                // または
+                ModelState.AddModelError("", "Songの処理に失敗しました");
             }
 
             if (String.IsNullOrEmpty(song.Note)) {
