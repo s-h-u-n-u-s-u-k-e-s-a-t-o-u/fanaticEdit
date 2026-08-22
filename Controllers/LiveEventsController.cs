@@ -453,13 +453,47 @@ public class LiveEventsController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(Guid id)
     {
-        var liveEvent = await _context.LiveEvents.FindAsync(id);
-        if (liveEvent != null)
+        try
         {
-            _context.LiveEvents.Remove(liveEvent);
+            // 関連データをカスケード削除
+            await _context.SetListNotes
+                .Where(n => _context.SetLists
+                    .Where(sl => sl.LiveEventId == id)
+                    .Select(sl => sl.SetListId)
+                    .Contains(n.SetListId))
+                .ExecuteDeleteAsync();
+
+            await _context.SetLists
+                .Where(sl => sl.LiveEventId == id)
+                .ExecuteDeleteAsync();
+
+            await _context.LiveEventUrls
+                .Where(u => u.Live_Event_Id == id)
+                .ExecuteDeleteAsync();
+
+            await _context.LiveEventNotes
+                .Where(n => n.LiveEventId == id)
+                .ExecuteDeleteAsync();
+
+            await _context.AbstractEventLinks
+                .Where(al => al.EventId == id)
+                .ExecuteDeleteAsync();
+
+            var liveEvent = await _context.LiveEvents.FindAsync(id);
+            if (liveEvent != null)
+            {
+                _context.LiveEvents.Remove(liveEvent);
+            }
+
+            await _context.SaveChangesAsync();
+        }
+        catch (Exception ex)
+        {
+            // ログに記録
+            Console.WriteLine($"LiveEvent 削除エラー: {ex.Message}");
+            return StatusCode(500, "LiveEvent 削除処理中にエラーが発生しました");
         }
 
-        await _context.SaveChangesAsync();
         return RedirectToAction(nameof(Index));
     }
 
