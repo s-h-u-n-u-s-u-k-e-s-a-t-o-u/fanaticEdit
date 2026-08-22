@@ -63,8 +63,8 @@ public class LiveEventsController : Controller
     {
         if (ModelState.IsValid)
         {
+            // LiveEventを追加
             _context.Add(liveEvent);
-            await _context.SaveChangesAsync();
 
             if (liveEvent.AbstractEventId.HasValue)
             {
@@ -76,8 +76,9 @@ public class LiveEventsController : Controller
                     CreatedAt = DateTime.Now,
                     ModifiedAt = DateTime.Now
                 };
+
+                // LiveEventとAbstractEventの間のリンクを追加
                 _context.AbstractEventLinks.Add(abstractEventLink);
-                await _context.SaveChangesAsync();
             }
 
             if (!string.IsNullOrEmpty(urlsData))
@@ -103,8 +104,10 @@ public class LiveEventsController : Controller
                                 _context.LiveEventUrls.Add(leu);
                             }
                         }
-                        await _context.SaveChangesAsync();
                     }
+
+                    // DBへの変更を反映
+                    await _context.SaveChangesAsync();
                 }
                 catch (Exception ex)
                 {
@@ -183,9 +186,9 @@ public class LiveEventsController : Controller
             .OrderBy(r => r.SetListNo).ToListAsync();
 
         // Event_list_urlを取得する
-        var liveEventUrls =await _context.LiveEventUrls
+        var liveEventUrls = await _context.LiveEventUrls
             .Where(leu => leu.Live_Event_Id == id)
-            .OrderBy(leu=>leu.Live_Event_Url_Id)
+            .OrderBy(leu => leu.Live_Event_Url_Id)
             .ToListAsync();
 
         // JSON 化して ViewBag に格納
@@ -234,9 +237,6 @@ public class LiveEventsController : Controller
             var timeStamp = DateTime.Now;
             liveEvent.ModifiedAt = timeStamp;
             _context.Update(liveEvent);
-
-            // Eventの変更をDBに反映する
-            await _context.SaveChangesAsync();
 
             // AbstractEvetIdの変更をDBに反映する
 
@@ -322,8 +322,6 @@ public class LiveEventsController : Controller
                         await _context.SetListNotes.Where(m => m.SetListId == sl.SetListId).ExecuteDeleteAsync();
                         _context.SetLists.Remove(sl);
                     }
-                    // Event Noteの変更をDBに反映する
-                    await _context.SaveChangesAsync();
                 }
 
                 foreach (var sl in liveEvent.SetList.Where(m => m.WillBeRemove == false))
@@ -408,7 +406,6 @@ public class LiveEventsController : Controller
                                 _context.LiveEventUrls.Add(leu);
                             }
                         }
-                        await _context.SaveChangesAsync();
                     }
                 }
                 catch (Exception ex)
