@@ -278,17 +278,9 @@ public class LiveEventsController : Controller
                     _context.AbstractEventLinks.RemoveRange(records);
                 }
             }
-            await _context.SaveChangesAsync();  // ✅ 非同期呼び出し
 
             // LiveEvent noteの処理
-            if (String.IsNullOrEmpty(liveEvent.LiveEventNote.Note))
-            {
-                // 入力のnoteが空、既存は削除するパターン
-                await _context.LiveEventNotes
-                                    .Where(m => m.LiveEventId == id)
-                                    .ExecuteDeleteAsync();
-            }
-            else
+            if (liveEvent.LiveEventNote?.Note != null)
             {
                 // Noteを入力した
 
@@ -311,8 +303,13 @@ public class LiveEventsController : Controller
                     note.ModifiedAt = timeStamp;
                 }
             }
-            // Event Noteの変更をDBに反映する
-            await _context.SaveChangesAsync();
+            else
+            {
+                // 入力のnoteが空、既存は削除するパターン
+                await _context.LiveEventNotes
+                                    .Where(m => m.LiveEventId == id)
+                                    .ExecuteDeleteAsync();
+            }
 
             // SetListの処理
             if (liveEvent.SetList != null)
@@ -385,8 +382,6 @@ public class LiveEventsController : Controller
                     }
                 }
             }
-            // EFを通して変更をDBに反映する
-            await _context.SaveChangesAsync();
 
             // Live_Event_Url の処理 - 既存URLをすべて削除して新しいものを追加
             await _context.LiveEventUrls.Where(m => m.Live_Event_Id == id).ExecuteDeleteAsync();
@@ -424,6 +419,9 @@ public class LiveEventsController : Controller
                     ModelState.AddModelError("", "LiveEventの処理に失敗しました");
                 }
             }
+
+            // EFを通して変更をDBに反映する
+            await _context.SaveChangesAsync();
         }
         catch (DbUpdateConcurrencyException)
         {
