@@ -47,6 +47,8 @@ public class LiveEventsController : Controller
         var model = new LiveEvent()
         {
             LiveEventId = Guid.NewGuid(),
+
+            // JCTで作成日時と更新日時を設定する
             CreatedAt = DateTime.Now,
             ModifiedAt = DateTime.Now
         };
@@ -61,6 +63,9 @@ public class LiveEventsController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create([Bind("LiveEventId,Title,Place,PerformAt,CreatedAt,ModifiedAt,AbstractEventId")] LiveEvent liveEvent, string? urlsData)
     {
+        // JCTで作成日時と更新日時を設定する
+        var timeStamp = DateTime.Now;
+
         if (ModelState.IsValid)
         {
             // LiveEventを追加
@@ -73,8 +78,9 @@ public class LiveEventsController : Controller
                 {
                     AbstractEventId = liveEvent.AbstractEventId.Value,
                     EventId = liveEvent.LiveEventId,
-                    CreatedAt = DateTime.Now,
-                    ModifiedAt = DateTime.Now
+
+                    CreatedAt = timeStamp,
+                    ModifiedAt = timeStamp
                 };
 
                 // LiveEventとAbstractEventの間のリンクを追加
@@ -88,7 +94,6 @@ public class LiveEventsController : Controller
                     var urlsList = JsonSerializer.Deserialize<List<dynamic>>(urlsData);
                     if (urlsList != null)
                     {
-                        var timeStamp = DateTime.Now;
                         foreach (var urlItem in urlsList)
                         {
                             if (!string.IsNullOrEmpty(urlItem.GetProperty("url").GetString()))
@@ -262,8 +267,8 @@ public class LiveEventsController : Controller
                     {
                         EventId = liveEvent.LiveEventId,
                         AbstractEventId = liveEvent.AbstractEventId.Value,
-                        CreatedAt = DateTime.Now,
-                        ModifiedAt = DateTime.Now,
+                        CreatedAt = timeStamp,
+                        ModifiedAt = timeStamp,
                     });
                 }
             }

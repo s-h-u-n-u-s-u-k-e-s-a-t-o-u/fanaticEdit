@@ -59,7 +59,7 @@ public class SongsController : Controller
             return NotFound();
         }
 
-        var note =await _context.SongNotes.FindAsync(id);
+        var note = await _context.SongNotes.FindAsync(id);
         song.Note = note?.Note;
 
         return View(song);
@@ -103,17 +103,21 @@ public class SongsController : Controller
                 ModelState.AddModelError("", "Songの処理に失敗しました");
             }
 
-            if (String.IsNullOrEmpty(song.Note)) {
+            if (String.IsNullOrEmpty(song.Note))
+            {
                 await _context.SongNotes
                                    .Where(note => note.SongId == id)
                                    .ExecuteDeleteAsync();
             }
-            else { 
-              // idがSongNotesテーブルに存在する場合は更新、無ければ追加する
+            else
+            {
+                // idがSongNotesテーブルに存在する場合は更新、無ければ追加する
                 var songNote = await _context.SongNotes.FirstOrDefaultAsync(n => n.SongId == id);
                 if (songNote != null)
                 {
                     songNote.Note = song.Note;
+
+                    // JCTで作成日時と更新日時を設定する
                     songNote.ModifiedAt = DateTime.Now;
                     _context.SongNotes.Update(songNote);
                 }
@@ -128,7 +132,6 @@ public class SongsController : Controller
                     });
                 }
                 await _context.SaveChangesAsync();
-                
             }
 
             return RedirectToAction(nameof(Index));

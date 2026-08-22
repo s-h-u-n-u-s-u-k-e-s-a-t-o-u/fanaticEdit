@@ -44,6 +44,8 @@ public class OrganizationsController : Controller
         return View(new Models.Organization()
         {
             OrganizationId = Guid.NewGuid(),
+
+            // JCTで作成日時と更新日時を設定する
             CreatedAt = DateTime.Now,
             ModifiedAt = DateTime.Now
         });

@@ -42,10 +42,13 @@ public class PeopleController : Controller
     public IActionResult Create()
     {
         return View(
-            new Person() { 
+            new Person()
+            {
                 PersonId = Guid.NewGuid(),
-                CreatedAt =DateTime.Now,
-                ModifiedAt =DateTime.Now
+
+                // JCTで作成日時と更新日時を設定する
+                CreatedAt = DateTime.Now,
+                ModifiedAt = DateTime.Now
             }
             );
     }
@@ -97,7 +100,7 @@ public class PeopleController : Controller
 
         if (ModelState.IsValid)
         {
-            person.ModifiedAt = DateTime.Now; 
+            person.ModifiedAt = DateTime.Now;
 
             try
             {

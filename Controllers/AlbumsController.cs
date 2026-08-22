@@ -28,6 +28,8 @@ public class AlbumsController : Controller
         var model = new Models.Album()
         {
             AlbumId = Guid.NewGuid(),
+
+            // JCTで作成日時と更新日時を設定する
             CreatedAt = DateTime.Now,
             ModifiedAt = DateTime.Now,
         };
@@ -51,6 +53,8 @@ public class AlbumsController : Controller
                 var AbstractAlbumLink = new AbstractAlbumLink();
                 AbstractAlbumLink.AlbumId = album.AlbumId;
                 AbstractAlbumLink.AbstractAlbumId = album.AbstractAlbumID.Value;
+
+                // JCTで作成日時と更新日時を設定する
                 AbstractAlbumLink.CreatedAt = DateTime.Now;
                 AbstractAlbumLink.ModifiedAt = DateTime.Now;
 
@@ -113,6 +117,7 @@ public class AlbumsController : Controller
         {
             try
             {
+                // JCTで作成日時と更新日時を設定する
                 album.ModifiedAt = DateTime.Now;
                 _context.Update(album);
 
@@ -123,15 +128,18 @@ public class AlbumsController : Controller
                     {
                         link = await _context.AbstractAlbumLinks.SingleAsync(r => r.AlbumId == album.AlbumId);
                         link.AbstractAlbumId = album.AbstractAlbumID.Value;
+
+                        // JCTで作成日時と更新日時を設定する
                         link.ModifiedAt = DateTime.Now;
                         _context.Update(link);
-
                     }
                     catch
                     {
                         // 新規
                         link = new AbstractAlbumLink() { AlbumId = album.AlbumId, CreatedAt = DateTime.Now };
                         link.AbstractAlbumId = album.AbstractAlbumID.Value;
+
+                        // JCTで作成日時と更新日時を設定する
                         link.ModifiedAt = DateTime.Now;
                         _context.AbstractAlbumLinks.Add(link);
                     }
@@ -156,6 +164,8 @@ public class AlbumsController : Controller
                         // 既存レコードがあれば更新
                         albumNote.Note = album.Note;
                         albumNote.ModifiedAt = DateTime.Now;
+
+                        // JCTで作成日時と更新日時を設定する
                         _context.AlbumNotes.Update(albumNote);
                     }
                     else
@@ -165,6 +175,8 @@ public class AlbumsController : Controller
                         {
                             AlbumId = id,
                             Note = album.Note,
+
+                            // JCTで作成日時と更新日時を設定する
                             CreatedAt = DateTime.Now,
                             ModifiedAt = DateTime.Now
                         };

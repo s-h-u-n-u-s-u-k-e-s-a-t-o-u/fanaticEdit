@@ -50,6 +50,8 @@ public class LabelsController : Controller
         var model = new Models.Label()
         {
             LabelId = Guid.NewGuid(),
+
+            // JCTで作成日時と更新日時を設定する
             CreatedAt = DateTime.Now,
             ModifiedAt = DateTime.Now
         };
@@ -124,7 +126,7 @@ public class LabelsController : Controller
             {
                 // ロギング
                 _logger.LogError(ex, "Label処理エラー");
-                
+
                 ModelState.AddModelError("", "Labelの処理に失敗しました");
             }
             return RedirectToAction(nameof(Index));

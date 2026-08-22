@@ -48,6 +48,8 @@ public class AbstractEventsController : Controller
             new AbstractEvent
             {
                 AbstractEventId = Guid.NewGuid(),
+                
+                // JCTで作成日時と更新日時を設定する
                 CreatedAt = DateTime.Now,
                 ModifiedAt = DateTime.Now
             }

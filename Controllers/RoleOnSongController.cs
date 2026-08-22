@@ -92,6 +92,8 @@ public class RoleOnSongController : Controller
                     SongId = model.song.SongId,
                     PersonId = pwr.person.PersonId,
                     RoleId = pwr.role.RoleId,
+
+                    // JCTで作成日時と更新日時を設定する
                     CreatedAt = DateTime.Now,
                     ModifiedAt = DateTime.Now
                 };

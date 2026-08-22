@@ -53,12 +53,14 @@ public class AlbumTracksController : Controller
                 {
                     TrackId = Guid.NewGuid(),
                     TrackNo = count,
+
+                    // JCTで作成日時と更新日時を設定する
                     CreatedAt = DateTime.Now,
                     ModifiedAt = DateTime.Now,
                     AlbumId = model.Album.AlbumId
                 }
             );
-            return View("Edit",model);
+            return View("Edit", model);
         }
         return new EmptyResult();
     }
@@ -75,7 +77,7 @@ public class AlbumTracksController : Controller
         foreach (var track in model.Tracks)
         {
             // trackが Tracksテーブルに存在するか?
-            if(_context.Tracks.Any(t => t.TrackId == track.TrackId))
+            if (_context.Tracks.Any(t => t.TrackId == track.TrackId))
             {
                 // 存在する場合は更新
                 var existingTrack = await _context.Tracks.FindAsync(track.TrackId);
@@ -85,6 +87,8 @@ public class AlbumTracksController : Controller
                     existingTrack.Title = track.Title;
                     existingTrack.Length = track.Length;
                     existingTrack.SongId = track.SongId;
+
+                    // JCTで作成日時と更新日時を設定する
                     existingTrack.ModifiedAt = DateTime.Now;
                 }
             }

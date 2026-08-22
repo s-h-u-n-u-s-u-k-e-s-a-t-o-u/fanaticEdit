@@ -46,6 +46,8 @@ public class AbstractAlbumsController : Controller
         return View(new AbstractAlbum()
         {
             AbstractAlbumId = Guid.NewGuid(),
+
+            // JCTで作成日時と更新日時を設定する
             CreatedAt = DateTime.Now,
             ModifiedAt = DateTime.Now
         }
@@ -70,6 +72,8 @@ public class AbstractAlbumsController : Controller
                 {
                     AlbumId = Guid.NewGuid(),
                     Title = abstractAlbum.Title,
+
+                    // JCTで作成日時と更新日時を設定する
                     CreatedAt = DateTime.Now,
                     ModifiedAt = DateTime.Now,
                     ReleaseOn = DateTime.Now
@@ -82,6 +86,8 @@ public class AbstractAlbumsController : Controller
                 {
                     AbstractAlbumId = abstractAlbum.AbstractAlbumId,
                     AlbumId = album.AlbumId,
+
+                    // JCTで作成日時と更新日時を設定する
                     CreatedAt = DateTime.Now,
                     ModifiedAt = DateTime.Now
                 }
