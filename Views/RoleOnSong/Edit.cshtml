@@ -6,64 +6,224 @@
 
 <h1>@ViewData["Title"]</h1>
 
-<form asp-action="Edit" method="post">
+<form asp-action="Edit" method="post" id="editForm">
     <input type="hidden" asp-for="song.SongId" />
     <div class="row">
 
         <div class="col-md-4">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="@Model.song.SongId" />
-            <spna>
-                @Html.DisplayFor(model => model.song.Title)
-                <input type="hidden" asp-for="@Model.song.Title" readonly="readonly" />
-            </spna><br />
-            <spna>
-                @Html.DisplayFor(model => model.song.Kana)
-                <input type="hidden" asp-for="@Model.song.Kana" readonly="readonly" />
-            </spna><br />
-            <spna>
-                @Html.DisplayFor(model => model.song.CreatedAt)
-                <input type="hidden" asp-for="@Model.song.CreatedAt" readonly="readonly" />
-            </spna><br />
-            <spna>
-                @Html.DisplayFor(model => model.song.ModifiedAt)
-                <input type="hidden" asp-for="@Model.song.ModifiedAt" readonly="readonly" />
-            </spna><br />
             <div>
-                <input type="submit" />
+                <strong>タイトル:</strong>
+                @Html.DisplayFor(model => model.song.Title)
+                <input type="hidden" asp-for="@Model.song.Title" />
+            </div>
+            <div>
+                <strong>カナ:</strong>
+                @Html.DisplayFor(model => model.song.Kana)
+                <input type="hidden" asp-for="@Model.song.Kana" />
+            </div>
+            <div>
+                <strong>登録日時:</strong>
+                @Html.DisplayFor(model => model.song.CreatedAt)
+                <input type="hidden" asp-for="@Model.song.CreatedAt" />
+            </div>
+            <div>
+                <strong>更新日時:</strong>
+                @Html.DisplayFor(model => model.song.ModifiedAt)
+                <input type="hidden" asp-for="@Model.song.ModifiedAt" />
+            </div>
+            <div class="mt-3">
+                <input type="submit" value="保存" class="btn btn-primary" />
+                <a href="@Url.Action("Index", "Songs")" class="btn btn-secondary">キャンセル</a>
             </div>
         </div>
         <div class="col-md-8">
-            @if (Model.personWithRoles != null)
-            {
-                <table>
-                    @for (int i = 0; i < Model.personWithRoles.Count; i++)
+            <!-- テーブルを常に表示（空でも） -->
+            <table class="table table-striped" id="roleTable">
+                <thead>
+                    <tr>
+                        <th>役割</th>
+                        <th>人物ID</th>
+                        <th>人物名</th>
+                        <th style="width: 200px;"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.personWithRoles != null && Model.personWithRoles.Count > 0)
                     {
-                        <tr>
-                            <td>
-                                @Html.HiddenFor(m => m.personWithRoles[i].personWithRoleId)
-                                <select asp-for="@Model.personWithRoles[i].role.RoleId" class="form-control" style="width:10em;">
-                                    @foreach (var item in (SelectList?)ViewData["RoleList"])
-                                    {
-                                        <option value="@item.Value">@item.Text</option>
-                                    }
-                                    <option value="">選択してください</option>
-                                </select>
-                                <span asp-validation-for="@Model.personWithRoles[i].role.RoleId" class="text-danger"></span>
-                            </td>
-                            <td>
-                                <input type="text" asp-for="@Model.personWithRoles[i].person.PersonId" class="form-control" style="width:20em;" />
-                                <input type="hidden" asp-for="@Model.personWithRoles[i].person.Name" />
-                            </td>
-                            <td>
-                                @Html.DisplayFor(m => m.personWithRoles[i].person.Name)
+                        @for (int i = 0; i < Model.personWithRoles.Count; i++)
+                        {
+                            <tr data-index="@i">
+                                <td>
+                                    @Html.HiddenFor(m => m.personWithRoles[i].personWithRoleId)
+                                    @Html.HiddenFor(m => m.personWithRoles[i].person.PersonId)
+                                    @Html.HiddenFor(m => m.personWithRoles[i].person.Name)
+                                    <select asp-for="@Model.personWithRoles[i].role.RoleId" 
+                                            asp-items="@(ViewData["RoleList"] as List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem> ?? new())"
+                                            class="form-control role-select" 
+                                            style="width: auto;">
+                                        <option value="">-- 選択 --</option>
+                                    </select>
+                                    <span asp-validation-for="@Model.personWithRoles[i].role.RoleId" class="text-danger"></span>
+                                </td>
+                                <td>
+                                    <input type="text" value="@Model.personWithRoles[i].person?.PersonId" class="form-control person-id-display" readonly style="width: 250px; background-color: #f5f5f5;" />
+                                </td>
+                                <td>
+                                    <span class="person-name-display">@Model.personWithRoles[i].person?.Name</span>
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-sm btn-info" onclick="openPersonSelector(@i)">人物選択</button>
+                                    <button type="button" class="btn btn-sm btn-danger" onclick="removePersonRole(@i)">削除</button>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr class="empty-message-row">
+                            <td colspan="4" class="text-center py-4">
+                                <div class="alert alert-info mb-0">
+                                    紐づけられた人物がありません。下のボタンから人物を追加してください。
+                                </div>
                             </td>
                         </tr>
                     }
-                </table>
+                </tbody>
+            </table>
 
-            }
-
+            <div class="mt-3">
+                <button type="button" class="btn btn-success" onclick="addPersonRole()">+ 人物を追加</button>
+            </div>
         </div>
     </div>
 </form>
+
+<script>
+    let currentPersonRoleIndex = -1;
+    const roleListData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize((ViewData["RoleList"] as List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem> ?? new()).Select(r => new { r.Value, r.Text })));
+
+    function openPersonSelector(index) {
+        currentPersonRoleIndex = index;
+        window.open('@Url.Action("PersonSelector", "RoleOnSong")', 'personSelector', 'width=700,height=600');
+    }
+
+    function setPersonData(personId, personName) {
+        if (currentPersonRoleIndex >= 0) {
+            const tbody = document.querySelector('#roleTable tbody');
+            const rows = tbody.querySelectorAll('tr:not(.empty-message-row)');
+
+            if (currentPersonRoleIndex < rows.length) {
+                const row = rows[currentPersonRoleIndex];
+                
+                // Hidden フィールドを更新（バインディング用）
+                const personIdHiddens = row.querySelectorAll('input[type="hidden"][name*="person.PersonId"]');
+                if (personIdHiddens.length > 0) {
+                    personIdHiddens.forEach(input => {
+                        input.value = personId;
+                    });
+                }
+
+                const personNameHiddens = row.querySelectorAll('input[type="hidden"][name*="person.Name"]');
+                if (personNameHiddens.length > 0) {
+                    personNameHiddens.forEach(input => {
+                        input.value = personName;
+                    });
+                }
+
+                // 表示用フィールドを更新
+                const personIdDisplay = row.querySelector('.person-id-display');
+                if (personIdDisplay) {
+                    personIdDisplay.value = personId;
+                }
+
+                // 人物名を更新
+                const nameDisplay = row.querySelector('.person-name-display');
+                if (nameDisplay) {
+                    nameDisplay.textContent = personName;
+                }
+            }
+        }
+    }
+
+    function addPersonRole() {
+        const tbody = document.querySelector('#roleTable tbody');
+        if (!tbody) {
+            alert('テーブルが見つかりません');
+            return;
+        }
+
+        // 空のメッセージ行があれば削除
+        const emptyRow = tbody.querySelector('.empty-message-row');
+        if (emptyRow) {
+            emptyRow.remove();
+        }
+
+        // 既存行の数を取得（新規行のインデックスとして使用）
+        const rowCount = tbody.querySelectorAll('tr:not(.empty-message-row)').length;
+        const roleOptions = roleListData.map(r => `<option value="${r.Value}">${r.Text}</option>`).join('');
+
+        const newRowHtml = `
+            <tr data-index="${rowCount}">
+                <td>
+                    <input type="hidden" name="personWithRoles[${rowCount}].personWithRoleId" value="0" />
+                    <input type="hidden" name="personWithRoles[${rowCount}].person.PersonId" value="" />
+                    <input type="hidden" name="personWithRoles[${rowCount}].person.Name" value="" />
+                    <select name="personWithRoles[${rowCount}].role.RoleId" class="form-control role-select" style="width: auto;">
+                        <option value="">-- 選択 --</option>
+                        ${roleOptions}
+                    </select>
+                </td>
+                <td>
+                    <input type="text" value="" class="form-control person-id-display" readonly style="width: 250px; background-color: #f5f5f5;" />
+                </td>
+                <td>
+                    <span class="person-name-display">未選択</span>
+                </td>
+                <td>
+                    <button type="button" class="btn btn-sm btn-info" onclick="openPersonSelector(${rowCount})">人物選択</button>
+                    <button type="button" class="btn btn-sm btn-danger" onclick="removePersonRole(${rowCount})">削除</button>
+                </td>
+            </tr>
+        `;
+
+        const newRow = document.createElement('tr');
+        newRow.innerHTML = newRowHtml.trim();
+        tbody.appendChild(newRow);
+    }
+
+    function removePersonRole(index) {
+        if (confirm('この人物を削除してもよろしいですか？')) {
+            const tbody = document.querySelector('#roleTable tbody');
+            const rows = tbody.querySelectorAll('tr:not(.empty-message-row)');
+            
+            if (index < rows.length) {
+                rows[index].remove();
+            }
+
+            // 行が全て削除された場合、空のメッセージを表示
+            if (tbody.querySelectorAll('tr:not(.empty-message-row)').length === 0) {
+                const emptyRow = document.createElement('tr');
+                emptyRow.className = 'empty-message-row';
+                emptyRow.innerHTML = `
+                    <td colspan="4" class="text-center py-4">
+                        <div class="alert alert-info mb-0">
+                            紐づけられた人物がありません。下のボタンから人物を追加してください。
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(emptyRow);
+            }
+        }
+    }
+
+    // 人物選択後のコールバック
+    window.setPersonData = setPersonData;
+</script>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

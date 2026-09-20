@@ -1,0 +1,64 @@
+@model List<fanaticEdit.Models.Person>
+
+@{
+    ViewData["Title"] = "人物選択";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<div class="container">
+    <div class="mb-3">
+        <input type="text" id="searchInput" class="form-control" placeholder="人物名またはカナで検索..." />
+    </div>
+
+    <table class="table table-striped" id="personTable">
+        <thead>
+            <tr>
+                <th>人物ID</th>
+                <th>名前</th>
+                <th>カナ</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var person in Model)
+            {
+                <tr>
+                    <td>@person.PersonId</td>
+                    <td>@person.Name</td>
+                    <td>@person.Kana</td>
+                    <td>
+                        <button type="button" class="btn btn-sm btn-primary" onclick="selectPerson('@person.PersonId', '@person.Name')">選択</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<script>
+    function selectPerson(personId, personName) {
+        // 親ウィンドウの setPersonData を呼び出す
+        window.opener.setPersonData(personId, personName);
+        // ウィンドウを閉じる
+        window.close();
+    }
+
+    // 検索機能
+    document.getElementById('searchInput').addEventListener('keyup', function() {
+        const searchValue = this.value.toLowerCase();
+        const tableRows = document.querySelectorAll('#personTable tbody tr');
+
+        tableRows.forEach(row => {
+            const personId = row.cells[0].textContent.toLowerCase();
+            const name = row.cells[1].textContent.toLowerCase();
+            const kana = row.cells[2].textContent.toLowerCase();
+
+            if (personId.includes(searchValue) || name.includes(searchValue) || kana.includes(searchValue)) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    });
+</script>
