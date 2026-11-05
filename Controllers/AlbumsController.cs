@@ -232,9 +232,18 @@ public class AlbumsController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(Guid id)
     {
+        // 外部制約 AbstractAlbumLinksから削除
+        var link = await _context.AbstractAlbumLinks.SingleOrDefaultAsync(r => r.AlbumId == id);
+        if (link != null)
+        {
+            _context.AbstractAlbumLinks.Remove(link);
+        }
+
+        // Albumテーブルから削除
         var album = await _context.Albums.FindAsync(id);
         if (album != null)
         {
+
             _context.Albums.Remove(album);
         }
 

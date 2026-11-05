@@ -66,10 +66,14 @@ public class LiveEventsController : Controller
         // JCTで作成日時と更新日時を設定する
         var timeStamp = DateTime.Now;
 
-        if (ModelState.IsValid)
+        if (!ModelState.IsValid)
+        {
+            return View(liveEvent);
+        }
         {
             // LiveEventを追加
-            _context.Add(liveEvent);
+            _context.LiveEvents.Add(liveEvent);
+            await _context.SaveChangesAsync();
 
             if (liveEvent.AbstractEventId.HasValue)
             {

@@ -11,12 +11,14 @@ public partial class Track
     /// </summary>
     [Key]
     [Column("track_id")]
+    [Required]
     public Guid TrackId { get; set; }
 
     /// <summary>
     /// アルバムID
     /// </summary>
     [Column("album_id")]
+    [Required]
     public Guid AlbumId { get; set; }
 
     /// <summary>
@@ -30,6 +32,7 @@ public partial class Track
     /// </summary>
     [Column("title")]
     [StringLength(256)]
+    [Required]
     public string Title { get; set; } = null!;
 
     /// <summary>
@@ -42,6 +45,7 @@ public partial class Track
     /// 楽曲ID
     /// </summary>
     [Column("song_id")]
+    [Required]
     public Guid? SongId { get; set; }
 
     /// <summary>

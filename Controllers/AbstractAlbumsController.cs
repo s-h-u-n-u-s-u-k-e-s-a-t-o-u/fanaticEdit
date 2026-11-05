@@ -66,19 +66,23 @@ public class AbstractAlbumsController : Controller
             abstractAlbum.AbstractAlbumId = Guid.NewGuid();
             _context.Add(abstractAlbum);
 
+            _context.SaveChanges();
+
             // 実アルバムも1件作る
             var album =
                 new Models.Album()
                 {
                     AlbumId = Guid.NewGuid(),
                     Title = abstractAlbum.Title,
-
                     // JCTで作成日時と更新日時を設定する
                     CreatedAt = DateTime.Now,
                     ModifiedAt = DateTime.Now,
-                    ReleaseOn = DateTime.Now
+                    ReleaseOn = DateTime.Now,
+                    MediaType = 1 // 初期登録時は「CD」とする
                 };
             _context.Albums.Add(album);
+
+            _context.SaveChanges();
 
             // link
             _context.AbstractAlbumLinks.Add(
